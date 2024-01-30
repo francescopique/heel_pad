@@ -11,17 +11,15 @@ plt.rcParams['text.usetex'] = True
 # load np array from csv
 data_path = 'barefoot_load.csv'
 data_load = np.genfromtxt(data_path,delimiter='\t')
-mm = data_load[:,0]
-N = data_load[:,1]
-
 data_path = 'barefoot_unload.csv'
 data_unload = np.genfromtxt(data_path,delimiter='\t')
-mm = np.append(mm,data_unload[:,0])
-N = np.append(N,data_unload[:,1])
-
+# convert to SI
+data_load[:,0] = data_load[:,0]/1000 # mm to m
+data_unload[:,0] = data_unload[:,0]/1000 # mm to m
+data = np.append(data_load,data_unload,axis=0) 
 
 x_init = 0        # non c'è contatto iniziale, e la velocità iniziale è nulla
-x_peak = 0.012    # massima profondità di indentazione (in questo caso di deformazione perchè l'esperimento non è deformaz.)
+x_peak = 0.01222   #[m] massima profondità di indentazione (in questo caso di deformazione perchè l'esperimento non è deformaz.)
 f = 1.1           # frequenza della sinusoide
 R = 0.032         # raggio sfera di contatto da osim
 
@@ -74,9 +72,9 @@ for i in range(len(fHc)):
 
 fN = fHz + fdiss
 
-plt.plot(x*1000, fN, '-.',label='HC model E=%d c=%d' %tuple((E,c)))
-plt.plot(mm, N,label='In vivo (Aerts 1993)')
-plt.xlabel('x [mm]')
+plt.plot(x, fN, '-.',label='HC model E=%d c=%d' %tuple((E,c)))
+plt.plot(data[:,0], data[:,1],label='In vivo (Aerts 1993)')
+plt.xlabel('x [m]')
 plt.ylabel('Normal force [N]')
 
 
@@ -84,12 +82,12 @@ plt.ylabel('Normal force [N]')
 
 # optimization
 def residuals(X,data_load,data_unload):
-    fN =  get_fn_indent_full(X,x_peak,f)
+    fN =  get_fn_indent_full(X,data_load[:,0],data_unload[:,0],x_peak,f)
 
-    xplot = np.linspace(0, x_peak*1000, int(len(fN)/2))
-    load = np.interp(data_load[:,0],xplot,fN[0:100])
-    unload = np.interp(data_unload[:,0],xplot,np.flip(fN[100:]))
-    fN = np.append(load,unload)
+    # xplot = np.linspace(0, x_peak*1000, int(len(fN)/2))
+    # load = np.interp(data_load[:,0],xplot,fN[0:100])
+    # unload = np.interp(data_unload[:,0],xplot,np.flip(fN[100:]))
+    # fN = np.append(load,unload)
 
     fN_truth = np.append(data_load[:,1],data_unload[:,1])
     return fN - fN_truth
@@ -101,11 +99,11 @@ print(res)
 
 #try optimized function
 
-fN = get_fn_indent_full(res.x,x_peak,f)
-xplot = np.linspace(0, x_peak*1000, int(len(fN)/2))
-load = np.interp(data_load[:,0],xplot,fN[0:100])
-unload = np.interp(data_unload[:,0],xplot,np.flip(fN[100:]))
-fN = np.append(load,unload)
+fN = get_fn_indent_full(res.x,data_load[:,0],data_unload[:,0],x_peak,f)
+# xplot = np.linspace(0, x_peak*1000, int(len(fN)/2))
+# load = np.interp(data_load[:,0],xplot,fN[0:100])
+# unload = np.interp(data_unload[:,0],xplot,np.flip(fN[100:]))
+# fN = np.append(load,unload)
 
 #plot
 plt.plot(np.append(data_load[:,0],data_unload[:,0]),fN, '--',label='Best fit: E=%5.3f, c=%5.3f' % tuple(res.x))

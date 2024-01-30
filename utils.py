@@ -61,7 +61,7 @@ def get_fn_indent_half(X,x,x_peak,f):
     fN_load = fHz + fHc
     return fN_load
 
-def get_fn_indent_full(X,x_peak,f):
+def get_fn_indent_full(X,x_load,x_unload,x_peak,f):
     """
     function to get the hunt crossley normal force, for full sinusoidal identation experiments
     Includes the computation of the velocity:
@@ -70,30 +70,17 @@ def get_fn_indent_full(X,x_peak,f):
     x = [1-cos(2*pi*f*t)]*xp/2 we can get the velocity:
 
     X = [E,c] parameters to be optimized
-    x = indentation or deformation over time
+    x_load = indentation or deformation over time until load
+    x_unload = indentation or deformation over time after load until end
     f = frequency of the sinusoidal deformation
 
     """
-    x = np.linspace(0, x_peak, 100)
+    fN_load = get_fn_indent_half(X,x_load,x_peak,f)
+    
     R = 0.032
     E = X[0]
     c = X[1]
-    t = 1-2*x/x_peak
-
-    for i in range(len(t)):
-        t[i] = acos(t[i])/(2*pi*f)
-
-    xdot = 2*pi*f*t
-    for i in range(len(xdot)):
-        xdot[i] = f*x_peak*pi*sin(2*pi*f*t[i])
-    
-    fHz = (4/3)*sqrt(R)*E*x**(1.5)
-    fHc = 1.5*fHz*c*xdot
-
-    fN_load = fHz + fHc
-
-    
-    x = np.flip(x)
+    x = x_unload
     t = 1-2*(x)/(x_peak)
 
     for i in range(len(t)):
