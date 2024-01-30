@@ -83,12 +83,6 @@ plt.ylabel('Normal force [N]')
 # optimization
 def residuals(X,data_load,data_unload):
     fN =  get_fn_indent_full(X,data_load[:,0],data_unload[:,0],x_peak,f)
-
-    # xplot = np.linspace(0, x_peak*1000, int(len(fN)/2))
-    # load = np.interp(data_load[:,0],xplot,fN[0:100])
-    # unload = np.interp(data_unload[:,0],xplot,np.flip(fN[100:]))
-    # fN = np.append(load,unload)
-
     fN_truth = np.append(data_load[:,1],data_unload[:,1])
     return fN - fN_truth
 
@@ -98,12 +92,8 @@ res = least_squares(residuals, x0, args=(data_load,data_unload),bounds=bounds)
 print(res)
 
 #try optimized function
-
 fN = get_fn_indent_full(res.x,data_load[:,0],data_unload[:,0],x_peak,f)
-# xplot = np.linspace(0, x_peak*1000, int(len(fN)/2))
-# load = np.interp(data_load[:,0],xplot,fN[0:100])
-# unload = np.interp(data_unload[:,0],xplot,np.flip(fN[100:]))
-# fN = np.append(load,unload)
+
 
 #plot
 plt.plot(np.append(data_load[:,0],data_unload[:,0]),fN, '--',label='Best fit: E=%5.3f, c=%5.3f' % tuple(res.x))
