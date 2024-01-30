@@ -6,6 +6,8 @@ from utils import get_fn_standard
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
 decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 
+plt.rcParams['text.usetex'] = True
+
 # convert to SI units
 x_data[:,0] = x_data[:,0] / 1000 # s
 x_data[:,1] = x_data[:,1] / 1000 # m
@@ -43,8 +45,8 @@ R = 0.032
 fig, ax = plt.subplots()
 
 fN = get_fn_standard([E,c],x,xdot)
-ax.plot(x,fN_truth, label = 'Experimental Hirokima 1993')
-ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c))
+ax.plot(x,fN_truth, label = 'Experimental Hirokima 1993',color = 'black')
+ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
 
 # optimize
 
@@ -58,7 +60,7 @@ res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0], [1e10
 print(res)
 
 fN = get_fn_standard([res.x[0],res.x[1]],x,xdot)
-plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]))
+plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
 plt.legend()
 plt.show()
 

@@ -71,9 +71,9 @@ for i in range(len(fHc)):
     fdiss[i] = max(fHc[i],-fHz[i]) 
 
 fN = fHz + fdiss
+plt.plot(data[:,0], data[:,1],label='In vivo (Aerts 1993)',color='black')
+plt.plot(x, fN, '-.',label='HC model E=%d c=%d' %tuple((E,c)),color='blue',linestyle='--')
 
-plt.plot(x, fN, '-.',label='HC model E=%d c=%d' %tuple((E,c)))
-plt.plot(data[:,0], data[:,1],label='In vivo (Aerts 1993)')
 plt.xlabel('x [m]')
 plt.ylabel('Normal force [N]')
 
@@ -96,6 +96,6 @@ fN = get_fn_indent_full(res.x,data_load[:,0],data_unload[:,0],x_peak,f)
 
 
 #plot
-plt.plot(np.append(data_load[:,0],data_unload[:,0]),fN, '--',label='Best fit: E=%5.3f, c=%5.3f' % tuple(res.x))
+plt.plot(np.append(data_load[:,0],data_unload[:,0]),fN, '--',label='Best fit: E=%5.3f, c=%5.3f' % tuple(res.x),color='red',linestyle='-.')
 plt.legend()
 plt.show()
