@@ -29,7 +29,7 @@ def get_fn_standard(X,x,xdot):
 
     return fN
 
-def get_fn_indent_half(X,x_peak,f):
+def get_fn_indent_half(X,x,x_peak,f):
     """
     function to get the hunt crossley normal force, for half sinusoidal identation experiments
     Includes the computation of the velocity:
@@ -42,7 +42,7 @@ def get_fn_indent_half(X,x_peak,f):
     f = frequency of the sinusoidal deformation
 
     """
-    x = np.linspace(0, x_peak, 100) 
+    # x = np.linspace(0, x_peak, 100) 
     R = 0.032
     E = X[0]
     c = X[1]

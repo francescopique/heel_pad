@@ -9,37 +9,28 @@ from scipy.optimize import least_squares
 # load np array from csv
 data_path = 'aertz_asc_vitro.csv'
 data = np.genfromtxt(data_path,delimiter='\t')
-mm = data[:,0]
-N = data[:,1]
+# convert to SI
+data[:,0] = data[:,0]/1000 # mm to m
 
 
 
-
-x_init = 0          # non c'è contatto iniziale, e la velocità iniziale è nulla
-x_peak = 0.0063    # massima profondità di indentazione
-f = 1.1             # frequenza della sinusoide
-R = 0.032           # raggio sfera di contatto da osim
-
-x = np.linspace(x_init, x_peak, 100) 
-
+# Compute normal foerce with HC model and default parms
+x_peak = 0.0063    # massima profondità di indentazione [m]
+f = 1.1             # frequenza della sinusoide [Hz]
+R = 0.032           # raggio sfera di contatto da osim [m]
+x = np.linspace(0, x_peak, 100) 
 E=1e6
 c=2
-fN = get_fn_indent_half([E,c],x_peak,f)
+fN = get_fn_indent_half([E,c],x,x_peak,f)
 
-
-plt.plot(1000*x, fN, )
-# plt.plot(x*1000, fHz)
-# plt.plot(x*1000, fdiss)
-plt.plot(mm, N,'-.')
-#plt.legend(['fN', 'fHz', 'fdiss','aertz'])
-plt.legend(['model E=%d c=%d' %tuple((E,c)),'aertz'])
-plt.xlabel('x [mm]')
+plt.plot(x,fN,label='model E=%d c=%d' %tuple((E,c)))
+plt.plot(data[:,0],data[:,1],label='In vitro experimental (Aertz 1995)')
+plt.xlabel('x [m]')
 plt.ylabel('f [N]')
-plt.show()
 
 # optimise
 def residuals(X,data):
-    fN = get_fn_indent_half(X,x_peak,f)
+    fN = get_fn_indent_half(X,data[:,0],x_peak,f)
     return fN - data[:,1]
 
 x0 = np.array([1e6,2])
@@ -48,11 +39,8 @@ print(res)
 
 #try optimized function
 
-fN = get_fn_indent_half(res.x,x_peak,f)
-plt.plot(data[:,0],fN)
-plt.plot(data[:,0],data[:,1])
-plt.legend(['model E=%d c=%d' %tuple((res.x[0],res.x[1])),'aertz'])
-
-
+fN = get_fn_indent_half(res.x,data[:,0],x_peak,f)
+plt.plot(data[:,0],fN,label='Best fit model E=%d c=%d' %tuple((res.x[0],res.x[1])))
+plt.legend()
 plt.show()
 
