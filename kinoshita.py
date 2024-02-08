@@ -2,11 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from utils import get_fn_standard
+from scipy import integrate
 #import csv
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
 decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 
-plt.rcParams['text.usetex'] = True
+#plt.rcParams['text.usetex'] = True
 
 # convert to SI units
 x_data[:,0] = x_data[:,0] / 1000 # s
@@ -23,8 +24,11 @@ ax2.plot(decel_data[:,0], decel_data[:,1], 'r.',label='deceleration')
 t = np.linspace(0, 0.04, 100)
 x = np.interp(t, x_data[:,0], x_data[:,1])
 xddot = np.interp(t, decel_data[:,0], decel_data[:,1])
-xdot = np.gradient(x,t)
-mass = 5 * 9.81
+# integrate xddot
+xdot_init = 0.93
+xdot = integrate.cumtrapz(-xddot, t,initial=0) + xdot_init
+xdot_grad = np.gradient(x,t)
+mass = 5 
 
 print(xddot.shape)
 
@@ -32,6 +36,7 @@ fN_truth = mass*xddot
 ax1.plot(t, x, 'k', label='fit')
 ax2.plot(t, xddot, 'r',label='fit')
 ax3.plot(t, xdot, 'b',label='velocity (derived)')
+ax3.plot(t, xdot_grad, '--')
 ax4.plot(x,fN_truth, label = 'normal force')
 ax1.set_title('Experimental data')
 fig.legend()
@@ -45,8 +50,10 @@ R = 0.032
 fig, ax = plt.subplots()
 
 fN = get_fn_standard([E,c],x,xdot)
-ax.plot(x,fN_truth, label = 'Experimental Hirokima 1993',color = 'black')
+ax.plot(x,fN_truth, label = 'Experimental Kinoshita 1993',color = 'black')
 ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
+fN_mati = get_fn_standard([5e6,2],x,xdot)
+ax.plot(x,fN_mati,label='HC model mati (E =5e6, c = 2)', linestyle='--',color='g')
 
 # optimize
 
