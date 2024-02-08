@@ -72,7 +72,7 @@ R = 0.032
 fig, ax = plt.subplots()
 
 fN = get_fn_standard([E,c],x,xdot)
-ax.plot(x,fN_truth, label = 'Experimental Kinoshita 1993',color = 'black')
+ax.plot(x,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
 ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
 ax.set_xlabel('deformation [x]')
 ax.set_ylabel('Force [N]')
