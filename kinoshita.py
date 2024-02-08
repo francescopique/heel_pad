@@ -3,7 +3,12 @@ import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from utils import get_fn_standard
 from scipy import integrate
-#import csv
+
+# import experimental data from csv
+# This data is from Kinoshita 1993, exported from graphs using onlline digitizer
+# displacement.csv: time [ms], displacement [mm]. Is derived by the authors by integrating the acceleration signal that follows
+# deceleration.csv: time [ms], deceleration [G]. Signal from accelerometer plced on pendulum impacting the heelpad
+
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
 decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 
@@ -15,32 +20,49 @@ x_data[:,1] = x_data[:,1] / 1000 # m
 decel_data[:,0] = decel_data[:,0] / 1000 # s
 decel_data[:,1] = decel_data[:,1] * 9.81 # m/s^2
 
-#plot
-#sub plots
-fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1)
+#plots
+# experimental data
+fig, (ax1, ax2) = plt.subplots(2, 1)
 ax1.plot(x_data[:,0], x_data[:,1], 'k.', label='displacement')
+ax1.set_ylabel('[m]')
 ax2.plot(decel_data[:,0], decel_data[:,1], 'r.',label='deceleration')
-
-t = np.linspace(0, 0.04, 100)
-x = np.interp(t, x_data[:,0], x_data[:,1])
-xddot = np.interp(t, decel_data[:,0], decel_data[:,1])
-# integrate xddot
-xdot_init = 0.93
-xdot = integrate.cumtrapz(-xddot, t,initial=0) + xdot_init
-xdot_grad = np.gradient(x,t)
-mass = 5 
-
-print(xddot.shape)
-
-fN_truth = mass*xddot
-ax1.plot(t, x, 'k', label='fit')
-ax2.plot(t, xddot, 'r',label='fit')
-ax3.plot(t, xdot, 'b',label='velocity (derived)')
-ax3.plot(t, xdot_grad, '--')
-ax4.plot(x,fN_truth, label = 'normal force')
+ax2.set_ylabel(' [m/s^2]')
+ax2.set_xlabel('time [s]')
 ax1.set_title('Experimental data')
 fig.legend()
+plt.show()
 
+# interpolate data to get evenly spaced samples
+N = 100
+t = np.linspace(0, 0.04, 400)
+x = np.interp(t, x_data[:,0], x_data[:,1])
+xddot = np.interp(t, decel_data[:,0], decel_data[:,1])
+# integrate xddot to get velocity
+
+
+# for these data the initial impact veloicty is given in the paper as 0.93 m/s
+# To do : check velocity of impact range for walking
+
+
+# xddot is deceleration, thus the minus sign in the integration
+xdot_init = 0.93
+xdot = integrate.cumulative_trapezoid(-xddot, t,initial=0) + xdot_init
+
+# Normal force from the heel pad is calculated ass the product of pendulum mass (given) and deceleration
+mass = 5 
+fN_truth = mass*xddot
+
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+ax1.plot(t,x,'k',label='displacement (interpolated)')
+ax1.set_ylabel('[m]')
+ax2.plot(t,xddot,'r',label='deceleration (interpolated)')
+ax2.set_ylabel('[m/s^2]')
+ax3.plot(t,xdot,'b',label='velocity (computed)')
+ax3.set_ylabel('[m/s]')
+ax3.set_xlabel('time [s]')
+ax1.set_title('Derived data')
+fig.legend()
+plt.show()
 
 
 #incognite
@@ -52,11 +74,13 @@ fig, ax = plt.subplots()
 fN = get_fn_standard([E,c],x,xdot)
 ax.plot(x,fN_truth, label = 'Experimental Kinoshita 1993',color = 'black')
 ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
+ax.set_xlabel('deformation [x]')
+ax.set_ylabel('Force [N]')
+ax.set_title('model predictions vs. ground truth')
 fN_mati = get_fn_standard([5e6,2],x,xdot)
-ax.plot(x,fN_mati,label='HC model mati (E =5e6, c = 2)', linestyle='--',color='g')
+#ax.plot(x,fN_mati,label='HC model mati (E =5e6, c = 2)', linestyle='--',color='g')
 
-# optimize
-
+## optimize
 
 def residuals(X,x,xdot,fN_truth): 
     fN = get_fn_standard(X,x,xdot)
