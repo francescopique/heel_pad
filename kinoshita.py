@@ -30,7 +30,6 @@ ax2.set_ylabel(' [m/s^2]')
 ax2.set_xlabel('time [s]')
 ax1.set_title('Experimental data')
 fig.legend()
-plt.show()
 
 # interpolate data to get evenly spaced samples
 N = 100
@@ -62,7 +61,10 @@ ax3.set_ylabel('[m/s]')
 ax3.set_xlabel('time [s]')
 ax1.set_title('Derived data')
 fig.legend()
-plt.show()
+#grid on
+ax1.grid()
+ax2.grid()
+ax3.grid()
 
 
 #incognite
@@ -77,24 +79,28 @@ ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blu
 ax.set_xlabel('deformation [x]')
 ax.set_ylabel('Force [N]')
 ax.set_title('model predictions vs. ground truth')
-fN_mati = get_fn_standard([5e6,2],x,xdot)
-#ax.plot(x,fN_mati,label='HC model mati (E =5e6, c = 2)', linestyle='--',color='g')
+
 
 ## optimize
 
 def residuals(X,x,xdot,fN_truth): 
     fN = get_fn_standard(X,x,xdot)
-    return fN - fN_truth
+    return (fN - fN_truth)**2
 
-x0 = np.array([1e6,2])
+x0 = np.array([1e5,5])
 res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0], [1e10,1e2]))
 print(res)
 
 fN = get_fn_standard([res.x[0],res.x[1]],x,xdot)
 plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
 plt.legend()
+
+fig, ax = plt.subplots()
+ax.plot(t,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
+ax.plot(t, fN, label='model best fit (E =%f, c = %f)'% (res.x[0],res.x[1]), linestyle='-.',color='red')
+ax.set_xlabel('time [s]')
+ax.set_ylabel('Force [N]')
+ax.set_title('model predictions vs. ground truth')
+plt.legend()
 plt.show()
-
-
-
 
