@@ -85,7 +85,7 @@ ax.set_title('model predictions vs. ground truth')
 
 def residuals(X,x,xdot,fN_truth): 
     fN = get_fn_standard(X,x,xdot)
-    return (fN - fN_truth)**2
+    return (fN - fN_truth)
 
 x0 = np.array([1e5,5])
 res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0], [1e10,1e2]))
