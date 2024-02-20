@@ -71,11 +71,12 @@ ax3.grid()
 E = 1e6
 c = 2
 R = 0.032
+p = 1.5 # initial guess for exponent of x(deformation)
 fig, ax = plt.subplots()
 
-fN = get_fn_standard([E,c],x,xdot)
+fN = get_fn_standard([E,c,p],x,xdot)
 ax.plot(x,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
-ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
+ax.plot(x, fN, label='HC model (E =%f, c = %f, p = %f)'%(E,c,p), linestyle='--',color='blue')
 ax.set_xlabel('deformation [x]')
 ax.set_ylabel('Force [N]')
 ax.set_title('model predictions vs. ground truth')
@@ -87,17 +88,17 @@ def residuals(X,x,xdot,fN_truth):
     fN = get_fn_standard(X,x,xdot)
     return (fN - fN_truth)
 
-x0 = np.array([1e5,5])
-res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0], [1e10,1e2]))
+x0 = np.array([1e6,2,1.5]) # initial guess
+res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0,1], [1e10,1e2,5]))
 print(res)
 
-fN = get_fn_standard([res.x[0],res.x[1]],x,xdot)
-plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
+fN = get_fn_standard([res.x[0],res.x[1],res.x[2]],x,xdot)
+plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f, p = %f' % (res.x[0],res.x[1],res.x[2]), color = 'red',linestyle='-.')
 plt.legend()
 
 fig, ax = plt.subplots()
 ax.plot(t,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
-ax.plot(t, fN, label='model best fit (E =%f, c = %f)'% (res.x[0],res.x[1]), linestyle='-.',color='red')
+ax.plot(t, fN, label='model best fit (E =%f, c = %f, p = %f)'% (res.x[0],res.x[1],res.x[2]), linestyle='-.',color='red')
 ax.set_xlabel('time [s]')
 ax.set_ylabel('Force [N]')
 ax.set_title('model predictions vs. ground truth')

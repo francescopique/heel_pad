@@ -16,9 +16,10 @@ def get_fn_standard(X,x,xdot):
 
     E = X[0]
     c = X[1]
+    p = X[2]
     R = 0.032
 
-    fHz = (4/3)*sqrt(R)*E*x**(1.5)
+    fHz = (4/3)*sqrt(R)*E*x**(p)
     fHc = 1.5*fHz*c*xdot
 
     fdiss = np.zeros(len(fHc))
