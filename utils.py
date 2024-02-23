@@ -2,7 +2,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import sqrt, pi, sin, cos, acos
 
+def get_fn_falisse(X,x,xdot):
+    """
+    function to get the hunt crossley normal force, for impact experiments
+    
+    X = [E,c] parameters to be optimized
+    x = indentation or deformation over time
+    xdot = deformation velocity over time (must be known)
 
+    """
+
+    E = X[0]
+    c = X[1]
+    R = 0.032
+    k = 1/2 * E**(2./3.)
+    fHz = (4/3)*k*sqrt(R*k)*x**(3)
+    fHc = fHz*(1 + 1.5*c*xdot)
+
+    fdiss = np.zeros(len(fHc))
+    for i in range(len(fHc)):
+        fdiss[i] = max(fHc[i],-fHz[i])
+
+    fN = fHz + fdiss
+
+    return fN
 
 def get_fn_standard(X,x,xdot):
     """
@@ -18,7 +41,7 @@ def get_fn_standard(X,x,xdot):
     c = X[1]
     R = 0.032
 
-    fHz = (4/3)*sqrt(R)*E*x**(3)
+    fHz = (4/3)*sqrt(R)*E*x**(1.5)
     fHc = 1.5*fHz*c*xdot
 
     fdiss = np.zeros(len(fHc))
