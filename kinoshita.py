@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
-from utils import get_fn_standard, get_fn_falisse
+from utils import get_fn_standard, get_fn_falisse, get_fn_falisse_smooth
 from scipy import integrate
 
 # import experimental data from csv
@@ -74,7 +74,7 @@ R = 0.032
 fig, ax = plt.subplots()
 
 #fN = get_fn_standard([E,c],x,xdot)
-fN = get_fn_falisse([E,c],x,xdot)
+fN = get_fn_falisse_smooth([E,c],x,xdot)
 
 ax.plot(x,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
 ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
@@ -87,7 +87,7 @@ ax.set_title('model predictions vs. ground truth')
 
 def residuals(X,x,xdot,fN_truth): 
     #fN = get_fn_standard(X,x,xdot)
-    fN = get_fn_falisse(X,x,xdot)
+    fN = get_fn_falisse_smooth(X,x,xdot)
 
     return (fN - fN_truth)
 
@@ -97,7 +97,7 @@ print(res)
 print('E = %f, c = %f' % (res.x[0],res.x[1]))
 
 #fN = get_fn_standard([res.x[0],res.x[1]],x,xdot)
-fN = get_fn_falisse([res.x[0],res.x[1]],x,xdot)
+fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
 
 plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
 plt.legend()
