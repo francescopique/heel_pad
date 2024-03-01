@@ -13,7 +13,7 @@ def get_fn_falisse_smooth(X,x,xdot):
 
     E = X[0]
     c = X[1]
-    R = 0.03
+    R = 0.032
     bd = 300
     bv = 50
     k = 1/2 * E**(2./3.)

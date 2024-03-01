@@ -67,41 +67,51 @@ ax2.grid()
 ax3.grid()
 
 
-#incognite
+# get default model results
 E = 1e6
 c = 2
 R = 0.032
-fig, ax = plt.subplots()
-
-#fN = get_fn_standard([E,c],x,xdot)
 fN = get_fn_falisse_smooth([E,c],x,xdot)
 
+# plot default vs. ground truth
+fig, ax = plt.subplots()
 ax.plot(x,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
-ax.plot(x, fN, label='HC model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
+ax.plot(x, fN, label='HC default model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
 ax.set_xlabel('deformation [x]')
 ax.set_ylabel('Force [N]')
 ax.set_title('model predictions vs. ground truth')
 
 
-## optimize
-
+## function to optimize
 def residuals(X,x,xdot,fN_truth): 
     #fN = get_fn_standard(X,x,xdot)
     fN = get_fn_falisse_smooth(X,x,xdot)
-
     return (fN - fN_truth)
 
+
+# least squares problem and plot
+
+# initial guess
 x0 = np.array([1e5,5])
-res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0], [1e10,1e2]))
+# bounds
+E_lower = 1e1
+E_upper = 1e10
+c_lower = 0
+c_upper = 1e2
+bounds=([E_lower,c_lower], [E_upper,c_upper])
+
+res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=bounds)
 print(res)
 print('E = %f, c = %f' % (res.x[0],res.x[1]))
-
-#fN = get_fn_standard([res.x[0],res.x[1]],x,xdot)
 fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
-
 plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
+# add trials with different c
+fN = get_fn_falisse_smooth([5e9,1],x,xdot)
+plt.plot(x,fN, '-.',label = 'model best fit E = 5e9, c = 1', color = 'green',linestyle='-.')
 plt.legend()
 
+
+# plot over time
 fig, ax = plt.subplots()
 ax.plot(t,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
 ax.plot(t, fN, label='model best fit (E =%f, c = %f)'% (res.x[0],res.x[1]), linestyle='-.',color='red')
