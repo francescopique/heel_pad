@@ -1,6 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import sqrt, pi, sin, cos, acos, tanh
+
+def get_fn_miller(X,x,xdot):
+    a = X[0]
+    b = X[1]
+
+    fN = (a*x**2)*(1+b*xdot)
+
+    return fN
+
+def get_fn_ackermann(X,x,xdot):
+    a = X[0]
+    b = X[1]
+
+    fN = (a*x**3)*(1+b*xdot)
+
+    return fN
+
 def get_fn_falisse_smooth(X,x,xdot):
     """
     function to get the hunt crossley normal force, for impact experiments
@@ -13,11 +30,11 @@ def get_fn_falisse_smooth(X,x,xdot):
 
     E = X[0]
     c = X[1]
-    R = 0.032
+    R = 0.02
     bd = 300
     bv = 50
     k = 1/2 * E**(2./3.)
-    fHz = (4/3)*k*sqrt(R*k)*x**(3)
+    fHz = (4/3)*k*sqrt(R*k)*x**(3/2)
     fHz_smooth = np.zeros(len(fHz))
     for i in range(len(x)):
         fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*x[i]))

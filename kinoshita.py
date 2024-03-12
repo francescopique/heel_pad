@@ -105,9 +105,11 @@ print(res)
 print('E = %f, c = %f' % (res.x[0],res.x[1]))
 fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
 plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
-# add trials with different c
-fN = get_fn_falisse_smooth([5e9,1],x,xdot)
-plt.plot(x,fN, '-.',label = 'model best fit E = 5e9, c = 1', color = 'green',linestyle='-.')
+# # add trials with different c
+Etr = 5e9
+ctr = 1
+fN_trial = get_fn_falisse_smooth([Etr,ctr],x,xdot)
+#plt.plot(x,fN_trial, '-.',label = 'model trial E = %f, c = %f' % (Etr,ctr), color = 'green',linestyle='-.')
 plt.legend()
 
 
