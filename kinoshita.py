@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
-from utils import get_fn_standard
+from utils import get_fn_falisse_smooth_3parms
 from scipy import integrate
 
 # import experimental data from csv
@@ -74,7 +74,7 @@ R = 0.032
 p = 1.5 # initial guess for exponent of x(deformation)
 fig, ax = plt.subplots()
 
-fN = get_fn_standard([E,c,p],x,xdot)
+fN = get_fn_falisse_smooth_3parms([E,c,p],x,xdot)
 ax.plot(x,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
 ax.plot(x, fN, label='HC model (E =%f, c = %f, p = %f)'%(E,c,p), linestyle='--',color='blue')
 ax.set_xlabel('deformation [x]')
@@ -85,14 +85,14 @@ ax.set_title('model predictions vs. ground truth')
 ## optimize
 
 def residuals(X,x,xdot,fN_truth): 
-    fN = get_fn_standard(X,x,xdot)
+    fN = get_fn_falisse_smooth_3parms(X,x,xdot)
     return (fN - fN_truth)
 
 x0 = np.array([1e6,2,1.5]) # initial guess
 res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0,1], [1e10,1e2,5]))
 print(res)
 
-fN = get_fn_standard([res.x[0],res.x[1],res.x[2]],x,xdot)
+fN = get_fn_falisse_smooth_3parms([res.x[0],res.x[1],res.x[2]],x,xdot)
 plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f, p = %f' % (res.x[0],res.x[1],res.x[2]), color = 'red',linestyle='-.')
 plt.legend()
 
