@@ -12,7 +12,11 @@ from scipy import integrate
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
 decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 
-#plt.rcParams['text.usetex'] = True
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = 'Computer Modern Roman'
+plt.rcParams['font.size'] = 14
+
 
 # convert to SI units
 x_data[:,0] = x_data[:,0] / 1000 # s
@@ -26,7 +30,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1)
 ax1.plot(x_data[:,0], x_data[:,1], 'k.', label='displacement')
 ax1.set_ylabel('[m]')
 ax2.plot(decel_data[:,0], decel_data[:,1], 'r.',label='deceleration')
-ax2.set_ylabel(' [m/s^2]')
+ax2.set_ylabel(' $\mathrm{[m/s^2]$}')
 ax2.set_xlabel('time [s]')
 ax1.set_title('Experimental data')
 fig.legend()
@@ -52,14 +56,14 @@ mass = 5
 fN_truth = mass*xddot
 
 fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
-ax1.plot(t,x,'k',label='displacement (interpolated)')
+ax1.plot(t,x,'k',label='x')
 ax1.set_ylabel('[m]')
-ax2.plot(t,xddot,'r',label='deceleration (interpolated)')
-ax2.set_ylabel('[m/s^2]')
-ax3.plot(t,xdot,'b',label='velocity (computed)')
+ax2.plot(t,xddot,'r',label='$\mathrm{\ddot{x}}$')
+ax2.set_ylabel('$\mathrm{[m/s^2]}$')
+ax3.plot(t,xdot,'b',label='$\mathrm{\dot{x}}$')
 ax3.set_ylabel('[m/s]')
 ax3.set_xlabel('time [s]')
-ax1.set_title('Derived data')
+ax1.set_title('')
 fig.legend()
 #grid on
 ax1.grid()
@@ -67,6 +71,8 @@ ax2.grid()
 ax3.grid()
 
 
+# save images
+fig.savefig('fig/data.eps', format='eps')
 # get default model results
 E = 1e6
 c = 2
@@ -75,10 +81,10 @@ fN = get_fn_falisse_smooth([E,c],x,xdot)
 
 # plot default vs. ground truth
 fig, ax = plt.subplots()
-ax.plot(x,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
-ax.plot(x, fN, label='HC default model (E =%f, c = %f)'%(E,c), linestyle='--',color='blue')
-ax.set_xlabel('deformation [x]')
-ax.set_ylabel('Force [N]')
+ax.plot(x,fN_truth, label = 'Experimental',color = 'black')
+ax.plot(x, fN, label='E = 1 MPa, c = 2', linestyle='--',color='blue')
+ax.set_xlabel('deformation $[x]$')
+ax.set_ylabel('Force $[N]$')
 ax.set_title('model predictions vs. ground truth')
 
 
@@ -104,21 +110,22 @@ res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=bounds)
 print(res)
 print('E = %f, c = %f' % (res.x[0],res.x[1]))
 fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
-plt.plot(x,fN, '-.',label = 'model best fit E = %f, c = %f' % (res.x[0],res.x[1]), color = 'red',linestyle='-.')
+plt.plot(x,fN, '-.',label = 'Best fit E = %d, c = %f' % (int(res.x[0]),res.x[1]), color = 'red',linestyle='-.')
 # # add trials with different c
 Etr = 5e9
 ctr = 1
 fN_trial = get_fn_falisse_smooth([Etr,ctr],x,xdot)
 #plt.plot(x,fN_trial, '-.',label = 'model trial E = %f, c = %f' % (Etr,ctr), color = 'green',linestyle='-.')
-plt.legend()
+plt.legend(loc='upper left',bbox_to_anchor=(0,0.99))
+fig.savefig('fig/fit.png', format='png', dpi=600)
 
 
 # plot over time
 fig, ax = plt.subplots()
-ax.plot(t,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
-ax.plot(t, fN, label='model best fit (E =%f, c = %f)'% (res.x[0],res.x[1]), linestyle='-.',color='red')
-ax.set_xlabel('time [s]')
-ax.set_ylabel('Force [N]')
+ax.plot(t,fN_truth, label = 'Experimental',color = 'black')
+ax.plot(t, fN, label='Best fit $(E =%f, c = %f)$'% (res.x[0],res.x[1]), linestyle='-.',color='red')
+ax.set_xlabel('time $[s]$')
+ax.set_ylabel('Force $[N]$')
 ax.set_title('model predictions vs. ground truth')
 plt.legend()
 plt.show()
