@@ -26,14 +26,14 @@ decel_data[:,1] = decel_data[:,1] * 9.81 # m/s^2
 
 #plots
 # experimental data
-fig, (ax1, ax2) = plt.subplots(2, 1)
-ax1.plot(x_data[:,0], x_data[:,1], 'k.', label='displacement')
-ax1.set_ylabel('[m]')
-ax2.plot(decel_data[:,0], decel_data[:,1], 'r.',label='deceleration')
-ax2.set_ylabel(' $\mathrm{[m/s^2]$}')
-ax2.set_xlabel('time [s]')
-ax1.set_title('Experimental data')
-fig.legend()
+# fig, (ax1, ax2) = plt.subplots(2, 1)
+# ax1.plot(x_data[:,0], x_data[:,1], 'k.', label='displacement')
+# ax1.set_ylabel('[m]')
+# ax2.plot(decel_data[:,0], decel_data[:,1], 'r.',label='deceleration')
+# ax2.set_ylabel(' $\mathrm{[m/s^2]$}')
+# ax2.set_xlabel('time [s]')
+# ax1.set_title('Experimental data')
+# fig.legend()
 
 # interpolate data to get evenly spaced samples
 N = 100
@@ -55,7 +55,7 @@ xdot = integrate.cumulative_trapezoid(-xddot, t,initial=0) + xdot_init
 mass = 5 
 fN_truth = mass*xddot
 
-fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1,layout='constrained')
 ax1.plot(t,x,'k',label='x')
 ax1.set_ylabel('[m]')
 ax2.plot(t,xddot,'r',label='$\mathrm{\ddot{x}}$')
@@ -64,15 +64,17 @@ ax3.plot(t,xdot,'b',label='$\mathrm{\dot{x}}$')
 ax3.set_ylabel('[m/s]')
 ax3.set_xlabel('time [s]')
 ax1.set_title('')
-fig.legend()
+# legend
+fig.legend(loc='outside lower center',ncol=3)
+
 #grid on
 ax1.grid()
 ax2.grid()
 ax3.grid()
-
+plt.show()
 
 # save images
-fig.savefig('fig/data.eps', format='eps')
+fig.savefig('fig/data.png', format='png',dpi=600)
 # get default model results
 E = 1e6
 c = 2
@@ -120,13 +122,13 @@ plt.legend(loc='upper left',bbox_to_anchor=(0,0.99))
 fig.savefig('fig/fit.png', format='png', dpi=600)
 
 
-# plot over time
-fig, ax = plt.subplots()
-ax.plot(t,fN_truth, label = 'Experimental',color = 'black')
-ax.plot(t, fN, label='Best fit $(E =%f, c = %f)$'% (res.x[0],res.x[1]), linestyle='-.',color='red')
-ax.set_xlabel('time $[s]$')
-ax.set_ylabel('Force $[N]$')
-ax.set_title('model predictions vs. ground truth')
-plt.legend()
-plt.show()
+# # plot over time
+# fig, ax = plt.subplots()
+# ax.plot(t,fN_truth, label = 'Experimental',color = 'black')
+# ax.plot(t, fN, label='Best fit $(E =%f, c = %f)$'% (res.x[0],res.x[1]), linestyle='-.',color='red')
+# ax.set_xlabel('time $[s]$')
+# ax.set_ylabel('Force $[N]$')
+# ax.set_title('model predictions vs. ground truth')
+# plt.legend()
+# plt.show()
 
