@@ -114,10 +114,10 @@ print('E = %f, c = %f' % (res.x[0],res.x[1]))
 fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
 plt.plot(x,fN, '-.',label = 'Best fit E = %d, c = %f' % (int(res.x[0]),res.x[1]), color = 'red',linestyle='-.')
 # # add trials with different c
-Etr = 5e9
-ctr = 1
+Etr = 100000
+ctr = 2
 fN_trial = get_fn_falisse_smooth([Etr,ctr],x,xdot)
-#plt.plot(x,fN_trial, '-.',label = 'model trial E = %f, c = %f' % (Etr,ctr), color = 'green',linestyle='-.')
+plt.plot(x,fN_trial, '-.',label = 'model trial E = %f, c = %f' % (Etr,ctr), color = 'green',linestyle='-.')
 plt.legend(loc='upper left',bbox_to_anchor=(0,0.99))
 fig.savefig('fig/fit.png', format='png', dpi=600)
 
@@ -130,5 +130,5 @@ fig.savefig('fig/fit.png', format='png', dpi=600)
 # ax.set_ylabel('Force $[N]$')
 # ax.set_title('model predictions vs. ground truth')
 # plt.legend()
-# plt.show()
+plt.show()
 

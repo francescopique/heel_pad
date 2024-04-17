@@ -9,6 +9,12 @@ import utils
 # displacement.csv: time [ms], displacement [mm]. Is derived by the authors by integrating the acceleration signal that follows
 # deceleration.csv: time [ms], deceleration [G]. Signal from accelerometer plced on pendulum impacting the heelpad
 
+plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = 'Computer Modern Roman'
+plt.rcParams['font.size'] = 14
+
+
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
 decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 # convert to SI units
@@ -70,7 +76,8 @@ plt.plot(x,fN,label='Miller 2015 a=6e5,b=1',color='purple')
 a = 1e6
 b = 1.5
 fN = utils.get_fn_miller([a,b],x,xdot)
-plt.plot(x,fN,label='Lin and Pandy a=1e6,b=1.5',color='blue')
+plt.plot(x,fN,label='Lin and Pandy 2017 a=1e6,b=1.5',color='blue')
 
 plt.legend()
+plt.savefig('data_comparison.png',dpi=600)
 plt.show()
