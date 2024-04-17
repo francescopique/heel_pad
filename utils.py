@@ -5,6 +5,10 @@ from math import sqrt, pi, sin, cos, acos, tanh
 def get_fn_miller(X,x,xdot):
     a = X[0]
     b = X[1]
+
+    fN = (a*x**2)*(1+b*xdot)
+
+    return fN
 def get_fn_falisse_smooth_3parms(X,x,xdot):
     """
     function to get the hunt crossley normal force, for impact experiments
