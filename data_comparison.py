@@ -9,10 +9,10 @@ import utils
 # displacement.csv: time [ms], displacement [mm]. Is derived by the authors by integrating the acceleration signal that follows
 # deceleration.csv: time [ms], deceleration [G]. Signal from accelerometer plced on pendulum impacting the heelpad
 
-plt.rcParams['text.usetex'] = True
+# plt.rcParams['text.usetex'] = True
 plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = 'Computer Modern Roman'
-plt.rcParams['font.size'] = 14
+plt.rcParams['font.serif'] = 'times new roman'
+# plt.rcParams['font.size'] = 14
 
 
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
@@ -20,6 +20,7 @@ decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 # convert to SI units
 x_data[:,0] = x_data[:,0] / 1000 # s
 x_data[:,1] = x_data[:,1] / 1000 # m
+
 decel_data[:,0] = decel_data[:,0] / 1000 # s
 decel_data[:,1] = decel_data[:,1] * 9.81 # m/s^2
 
@@ -51,33 +52,46 @@ data_load[:,0] = data_load[:,0]/1000 # mm to m
 data_unload[:,0] = data_unload[:,0]/1000 # mm to m
 data = np.append(data_load,data_unload,axis=0) 
 
+f = plt.figure()
+
 #plot
-plt.plot(data[:,0], data[:,1],label='In vivo (Aerts 1993), vi = 0.96 m/s',color='black')
-plt.plot(x,fN_kino,label ='In vivo (Kinoshita 1993),vi = 0.93 m/s ',color='red')
-plt.xlabel('x [m]')
-plt.ylabel('Normal force [N]')
+# switch to mm
+xplot = x*1000
+# In vivo (Aerts 1993), vi = 0.96 m/s
+plt.plot(data[:,0]*1000, data[:,1],label='Aertz 1993\n (experimental)',color='black')
+plt.plot(xplot,fN_kino,label ='Kinoshita 1993\n (experimental)',color='red')
 
 
-# try ackermann 2010
+
+# try ackermann 2010 a=5e7,b=1
 a = 5e7
 b = 1
 fN = utils.get_fn_ackermann([a,b],x,xdot)
-plt.plot(x,fN,label='Ackermann 2010 a=5e7,b=1',color='green')
+plt.plot(xplot,fN,label='Ackermann 2010',color='green')
 
 
-# try miller 2015
+# try miller 2015 a=6e5,b=1
 a = 6e5
 b = 1
 fN = utils.get_fn_miller([a,b],x,xdot)
-plt.plot(x,fN,label='Miller 2015 a=6e5,b=1',color='purple')
+plt.plot(xplot,fN,label='Miller 2015',color='purple')
 
 
-# lin and pandy 2017
+# lin and pandy 2017 a=1e6,b=1.5
 a = 1e6
 b = 1.5
 fN = utils.get_fn_miller([a,b],x,xdot)
-plt.plot(x,fN,label='Lin and Pandy 2017 a=1e6,b=1.5',color='blue')
+plt.plot(xplot,fN,label='Lin 2017',color='blue')
+fsize = 8
+plt.legend(fontsize=fsize, framealpha=1)
+plt.yticks(fontsize=fsize)
+plt.xticks(fontsize=fsize)
+plt.xlabel('Deformation [mm]',fontsize=fsize)
+plt.ylabel('Normal Force [N]',fontsize=fsize)
+plt.grid()
 
-plt.legend()
+f.set_figwidth(3.5)
+f.set_figheight(3.)
+f.tight_layout()
 plt.savefig('data_comparison.png',dpi=600)
 plt.show()
