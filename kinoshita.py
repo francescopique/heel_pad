@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from utils import get_fn_standard, get_fn_falisse, get_fn_falisse_smooth
 from utils import get_fn_falisse_smooth_3parms
+from utils import get_fn_falisse_smooth_6parms
 from scipy import integrate
 
 # import experimental data from csv
@@ -91,9 +92,12 @@ xddot = np.interp(t, decel_data[:,0], decel_data[:,1])
 xdot_init = 0.93
 xdot = integrate.cumulative_trapezoid(-xddot, t,initial=0) + xdot_init
 
-# Normal force from the heel pad is calculated ass the product of pendulum mass (given) and deceleration
+# Normal force from the heel pad is calculated as the product of pendulum mass (given) and deceleration
 mass = 5 
 fN_truth = mass*xddot
+
+# data = np.column_stack((x, fN_truth))
+# np.savetxt('fN_truth.csv', data, delimiter=',')
 
 fig, (ax1, ax2, ax3) = plt.subplots(3, 1,layout='constrained')
 ax1.plot(t,x,'k',label='x')
@@ -115,16 +119,17 @@ plt.show()
 
 # save images
 fig.savefig('fig/data.png', format='png',dpi=600)
+
+
 # get default model results
 E = 1e6
 c = 2
-R = 0.032
 fN = get_fn_falisse_smooth([E,c],x,xdot)
 
 # plot default vs. ground truth
 fig, ax = plt.subplots()
 ax.plot(x,fN_truth, label = 'Experimental',color = 'black')
-ax.plot(x, fN, label='E = 1 MPa, c = 2', linestyle='--',color='blue')
+#ax.plot(x, fN, label='E = 1 MPa, c = 2', linestyle='--',color='blue')
 ax.set_xlabel('deformation $[x]$')
 ax.set_ylabel('Force $[N]$')
 ax.set_title('model predictions vs. ground truth')
@@ -143,7 +148,7 @@ def residuals(X,x,xdot,fN_truth):
 x0 = np.array([1e5,5])
 # bounds
 E_lower = 1e1
-E_upper = 1e10
+E_upper = 1e11
 c_lower = 0
 c_upper = 1e2
 bounds=([E_lower,c_lower], [E_upper,c_upper])
@@ -154,10 +159,10 @@ print('E = %f, c = %f' % (res.x[0],res.x[1]))
 fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
 plt.plot(x,fN, '-.',label = 'Best fit E = %d, c = %f' % (int(res.x[0]),res.x[1]), color = 'red',linestyle='-.')
 # # add trials with different c
-Etr = 100000
-ctr = 2
+Etr = 5628989580
+ctr = 1
 fN_trial = get_fn_falisse_smooth([Etr,ctr],x,xdot)
-plt.plot(x,fN_trial, '-.',label = 'model trial E = %f, c = %f' % (Etr,ctr), color = 'green',linestyle='-.')
+#plt.plot(x,fN_trial, '-.',label = 'model trial E = %f, c = %f' % (Etr,ctr), color = 'green',linestyle='-.')
 plt.legend(loc='upper left',bbox_to_anchor=(0,0.99))
 fig.savefig('fig/fit.png', format='png', dpi=600)
 
@@ -178,7 +183,6 @@ plt.show()
 #incognite
 E = 1e6
 c = 2
-R = 0.032
 p = 1.5 # initial guess for exponent of x(deformation)
 fig, ax = plt.subplots()
 
@@ -192,19 +196,20 @@ ax.set_title('model predictions vs. ground truth')
 
 ## optimize
 
-def residuals(X,x,xdot,fN_truth): 
+def residuals3(X,x,xdot,fN_truth): 
     fN = get_fn_falisse_smooth_3parms(X,x,xdot)
     return (fN - fN_truth)
 
 x0 = np.array([1e6,2,1.5]) # initial guess
-res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=([1e1,0,1], [1e10,1e2,5]))
+res = least_squares(residuals3, x0, args=(x,xdot,fN_truth),bounds=([1e1,0,1], [1e10,1e2,5]))
 print(res)
 
 fN = get_fn_falisse_smooth_3parms([res.x[0],res.x[1],res.x[2]],x,xdot)
 plt.plot(x,fN, '-.',label = 'Best fit\n E = %f\n c = %f\n p = %f' % (res.x[0],res.x[1],res.x[2]), color = 'red',linestyle='-.')
 plt.legend(loc='upper left')
 plt.savefig('fit_custom.png',dpi=600)
-
+plt.legend(loc='upper left')
+plt.show()
 # fig, ax = plt.subplots()
 # ax.plot(t,fN_truth, label = 'Experimental Ground Truth (Kinoshita 1993)',color = 'black')
 # ax.plot(t, fN, label='model best fit (E =%f, c = %f, p = %f)'% (res.x[0],res.x[1],res.x[2]), linestyle='-.',color='red')
@@ -212,7 +217,22 @@ plt.savefig('fit_custom.png',dpi=600)
 # ax.set_ylabel('Force [N]')
 # ax.set_title('model predictions vs. ground truth')
 # plt.legend()
-plt.show()
 
 
+# put bv and cf as parameters in the model
+# parms : E,c,p,bd,bv,cf
 
+# def residuals_6(X,x,xdot,fN_truth): 
+#     fN = get_fn_falisse_smooth_6parms(X,x,xdot)
+#     return (fN - fN_truth)
+
+# x0 = np.array([1e6,2,1.5,300,50,1e-5]) # initial guess
+# lbounds = [1e1,0,1,10,10,1e-10]
+# ubounds = [1e10,1e2,5,1000,1000,1e-3]
+# res = least_squares(residuals_6, x0, args=(x,xdot,fN_truth),bounds=(lbounds,ubounds),max_nfev=50000,verbose=1)
+# print(res)
+
+# fN = get_fn_falisse_smooth_3parms([res.x[0],res.x[1],res.x[2],res.x[3],res.x[4],res.x[5]],x,xdot)
+# ax.plot(x,fN, '-.',label = 'Best fit6' , color = 'green',linestyle='-.')
+# plt.legend(loc='upper left')
+# plt.show()

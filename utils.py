@@ -9,6 +9,7 @@ def get_fn_miller(X,x,xdot):
     fN = (a*x**2)*(1+b*xdot)
 
     return fN
+
 def get_fn_falisse_smooth_3parms(X,x,xdot):
     """
     function to get the hunt crossley normal force, for impact experiments
@@ -22,14 +23,20 @@ def get_fn_falisse_smooth_3parms(X,x,xdot):
     E = X[0]
     c = X[1]
     p = X[2]
+    cf = 1e-5
     R = 0.02
     bd = 300
     bv = 50
     k = 1/2 * E**(2./3.)
-    fHz = (4/3)*k*sqrt(R*k)*x**(p)
+    k = 1/2 * E**(2./3.)
+    #fHz = (4/3)*k*sqrt(R*k)*x**(3)
+    fHz = np.zeros(len(x))
+    for i in range(len(x)):
+        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(p))
     fHz_smooth = np.zeros(len(fHz))
     for i in range(len(x)):
-        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*x[i]))
+        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i])))
+
 
     fHc = fHz_smooth*(1 +1.5*c*xdot)
 
@@ -73,7 +80,7 @@ def get_fn_falisse_smooth(X,x,xdot):
         fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(3))
     fHz_smooth = np.zeros(len(fHz))
     for i in range(len(x)):
-        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*x[i]))
+        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i]-0.005)))
 
     fHc = fHz_smooth*(1 +1.5*c*xdot)
 
@@ -208,5 +215,44 @@ def get_fn_indent_full(X,x_load,x_unload,x_peak,f):
     fN_unload = fHz + fHc
 
     fN = np.append(fN_load,fN_unload)
+
+    return fN
+
+
+def get_fn_falisse_smooth_6parms(X,x,xdot):
+    """
+    function to get the smoothed hertz hunt crossley normal force
+    with six optimizable parameters
+    E = X[0]
+    c = X[1]
+    p = X[2]
+    bd = X[3]
+    bv = X[4]
+    cf = X[5]
+    """
+    E = X[0]
+    c = X[1]
+    p = X[2]
+    R = 0.03
+    bd = X[3]
+    bv = X[4]
+    cf = X[5]
+    k = 1/2 * E**(2./3.)
+      
+    fHz = np.zeros(len(x))
+    for i in range(len(x)):
+        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] + cf )**(p))
+
+    fHz_smooth = np.zeros(len(fHz))
+    for i in range(len(x)):
+        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*x[i]))
+        
+    fHc = fHz_smooth*(1 +1.5*c*xdot)
+
+    fHc_smooth = np.zeros(len(fHc))
+    for i in range(len(xdot)):
+        fHc_smooth[i] = fHc[i]*(0.5 + 0.5*tanh(bv*(xdot[i]+ (2./(3.*c)))))
+
+    fN = fHc_smooth
 
     return fN
