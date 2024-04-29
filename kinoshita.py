@@ -14,49 +14,10 @@ from scipy import integrate
 x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
 decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
 
-plt.rcParams['text.usetex'] = True
+#plt.rcParams['text.usetex'] = True
 plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = 'Computer Modern Roman'
-plt.rcParams['font.size'] = 14
-
-
-# convert to SI units
-x_data[:,0] = x_data[:,0] / 1000 # s
-x_data[:,1] = x_data[:,1] / 1000 # m
-decel_data[:,0] = decel_data[:,0] / 1000 # s
-decel_data[:,1] = decel_data[:,1] * 9.81 # m/s^2
-
-#plots
-# experimental data
-# fig, (ax1, ax2) = plt.subplots(2, 1)
-# ax1.plot(x_data[:,0], x_data[:,1], 'k.', label='displacement')
-# ax1.set_ylabel('[m]')
-# ax2.plot(decel_data[:,0], decel_data[:,1], 'r.',label='deceleration')
-# ax2.set_ylabel(' $\mathrm{[m/s^2]$}')
-# ax2.set_xlabel('time [s]')
-# ax1.set_title('Experimental data')
-# fig.legend()
-
-# interpolate data to get evenly spaced samples
-N = 100
-import matplotlib.pyplot as plt
-from scipy.optimize import least_squares
-from utils import get_fn_standard, get_fn_falisse, get_fn_falisse_smooth
-from utils import get_fn_falisse_smooth_3parms
-from scipy import integrate
-
-# import experimental data from csv
-# This data is from Kinoshita 1993, exported from graphs using onlline digitizer
-# displacement.csv: time [ms], displacement [mm]. Is derived by the authors by integrating the acceleration signal that follows
-# deceleration.csv: time [ms], deceleration [G]. Signal from accelerometer plced on pendulum impacting the heelpad
-
-x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
-decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
-
-plt.rcParams['text.usetex'] = True
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = 'Computer Modern Roman'
-plt.rcParams['font.size'] = 14
+plt.rcParams['font.serif'] = 'times new roman'
+#plt.rcParams['font.size'] = 14
 
 
 # convert to SI units
@@ -99,26 +60,38 @@ fN_truth = mass*xddot
 # data = np.column_stack((x, fN_truth))
 # np.savetxt('fN_truth.csv', data, delimiter=',')
 
-fig, (ax1, ax2, ax3) = plt.subplots(3, 1,layout='constrained')
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+fsize = 8
+
 ax1.plot(t,x,'k',label='x')
-ax1.set_ylabel('[m]')
-ax2.plot(t,xddot,'r',label='$\mathrm{\ddot{x}}$')
-ax2.set_ylabel('$\mathrm{[m/s^2]}$')
-ax3.plot(t,xdot,'b',label='$\mathrm{\dot{x}}$')
-ax3.set_ylabel('[m/s]')
-ax3.set_xlabel('time [s]')
-ax1.set_title('')
+ax1.set_ylabel('Deformation\n [m]',fontsize=fsize)
+ax1.tick_params(axis='both', labelsize=8)
+ax2.plot(t,xddot,'k')
+ax2.set_ylabel('Deceleration\n [m/$\mathdefault{s^2}$]',fontsize=fsize)
+ax2.tick_params(axis='both', labelsize=8)
+ax3.plot(t,xdot,'k',label='$\mathrm{\dot{x}}$')
+ax3.set_ylabel('Velocity\n [m/s]',fontsize=fsize)
+ax3.set_xlabel('Time [s]',fontsize=fsize)
+ax3.tick_params(axis='both', labelsize=8)
+
 # legend
-fig.legend(loc='outside lower center',ncol=3)
+#fig.legend(loc='outside lower center',ncol=3)
 
 #grid on
 ax1.grid()
 ax2.grid()
 ax3.grid()
+
+
+fig.set_figwidth(3.5)
+fig.set_figheight(3.)
+fig.tight_layout()
+
 plt.show()
 
 # save images
 fig.savefig('fig/data.png', format='png',dpi=600)
+exit()
 
 
 # get default model results
