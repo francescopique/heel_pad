@@ -1,0 +1,159 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
+from utils import get_fn_falisse_smooth, get_fn_custom_smooth, get_fn_custom_newsmooth
+
+from scipy import integrate
+
+# import experimental data from csv
+# This data is from Kinoshita 1993, exported from graphs using onlline digitizer
+# displacement.csv: time [ms], displacement [mm]. Is derived by the authors by integrating the acceleration signal that follows
+# deceleration.csv: time [ms], deceleration [G]. Signal from accelerometer plced on pendulum impacting the heelpad
+
+x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
+decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
+
+#plt.rcParams['text.usetex'] = True
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = 'times new roman'
+#plt.rcParams['font.size'] = 14
+
+
+# convert to SI units
+x_data[:,0] = x_data[:,0] / 1000 # s
+x_data[:,1] = x_data[:,1] / 1000 # m
+decel_data[:,0] = decel_data[:,0] / 1000 # s
+decel_data[:,1] = decel_data[:,1] * 9.81 # m/s^2
+
+# interpolate data to get evenly spaced samples
+N = 100
+t = np.linspace(0, 0.04, 400)
+x = np.interp(t, x_data[:,0], x_data[:,1])
+xddot = np.interp(t, decel_data[:,0], decel_data[:,1])
+# integrate xddot to get velocity
+
+# for these data the initial impact veloicty is given in the paper as 0.93 m/s
+# To do : check velocity of impact range for walking
+
+# xddot is deceleration, thus the minus sign in the integration
+xdot_init = 0.93
+xdot = integrate.cumulative_trapezoid(-xddot, t,initial=0) + xdot_init
+
+# Normal force from the heel pad is calculated as the product of pendulum mass (given) and deceleration
+mass = 5 
+fN_truth = mass*xddot
+
+fig, (ax1, ax2,ax3) = plt.subplots(1,3)
+#SUBPLOT 1
+# get default model results
+E = 1e6
+c = 2
+fN = get_fn_falisse_smooth([E,c],x,xdot)
+
+
+# plot default vs. ground truth
+ax1.plot(x,fN_truth, label = 'Experimental',color = 'black')
+#ax.plot(x, fN, label='E = 1 MPa, c = 2', linestyle='--',color='blue')
+ax1.set_xlabel('\na)')
+ax1.set_ylabel('Force [N]')
+
+
+## function to optimize 
+def residuals(X,x,xdot,fN_truth): 
+    #fN = get_fn_standard(X,x,xdot)
+    fN = get_fn_falisse_smooth(X,x,xdot)
+    return (fN - fN_truth)
+
+
+# least squares problem and plot
+# initial guess
+x0 = np.array([1e5,5])
+# bounds
+E_lower = 1e1
+E_upper = 1e11
+c_lower = 0
+c_upper = 1e2
+bounds=([E_lower,c_lower], [E_upper,c_upper])
+res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=bounds)
+print(res)
+print('E = %f, c = %f' % (res.x[0],res.x[1]))
+fN = get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
+ax1.plot(x,fN, '-.',label = 'Best fit E = %d, c = %f' % (int(res.x[0]),res.x[1]), color = 'red',linestyle='-.')
+fN_def = get_fn_falisse_smooth([E,c],x,xdot)
+ax1.plot(x,fN_def,label = 'Best fit E = 1 MPa, c = 2' , color = 'b',linestyle='--')
+ax1.grid()
+#SUBPLOT 2
+# get default model results
+E = 1e6
+c = 2
+fN = get_fn_custom_smooth([E,c],x,xdot)
+
+# plot default vs. ground truth
+ax2.plot(x,fN_truth, label = 'Experimental',color = 'black')
+#ax.plot(x, fN, label='E = 1 MPa, c = 2', linestyle='--',color='blue')
+ax2.set_xlabel('Deformation [m]\nb)')
+ax2.grid()
+
+## function to optimize
+def residuals(X,x,xdot,fN_truth): 
+    #fN = get_fn_standard(X,x,xdot)
+    fN = get_fn_custom_smooth(X,x,xdot)
+    return (fN - fN_truth)
+
+
+# least squares problem and plot
+# initial guess
+x0 = np.array([1e5,5])
+# bounds
+E_lower = 1e1
+E_upper = 1e11
+c_lower = 0
+c_upper = 1e2
+bounds=([E_lower,c_lower], [E_upper,c_upper])
+res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=bounds)
+print(res)
+print('E = %f, c = %f' % (res.x[0],res.x[1]))
+fN = get_fn_custom_smooth([res.x[0],res.x[1]],x,xdot)
+ax2.plot(x,fN, '-.',label = 'Best fit E = %d, c = %f' % (int(res.x[0]),res.x[1]), color = 'red',linestyle='-.')
+
+
+#SUBPLOT 3
+# get default model results
+E = 1e6
+c = 2
+fN = get_fn_custom_newsmooth([E,c],x,xdot)
+
+# plot default vs. ground truth
+ax3.plot(x,fN_truth, label = 'Experimental',color = 'black')
+#ax.plot(x, fN, label='E = 1 MPa, c = 2', linestyle='--',color='blue')
+ax3.set_xlabel('\nc)')
+ax3.grid() 
+
+## function to optimize
+def residuals(X,x,xdot,fN_truth): 
+    #fN = get_fn_standard(X,x,xdot)
+    fN = get_fn_custom_newsmooth(X,x,xdot)
+    return (fN - fN_truth)
+
+
+# least squares problem and plot
+# initial guess
+x0 = np.array([1e5,5])
+# bounds
+E_lower = 1e1
+E_upper = 1e11
+c_lower = 0
+c_upper = 1e2
+bounds=([E_lower,c_lower], [E_upper,c_upper])
+res = least_squares(residuals, x0, args=(x,xdot,fN_truth),bounds=bounds)
+print(res)
+print('E = %f, c = %f' % (res.x[0],res.x[1]))
+fN = get_fn_custom_newsmooth([res.x[0],res.x[1]],x,xdot)
+ax3.plot(x,fN, '-.',label = 'Best fit E = %d, c = %f' % (int(res.x[0]),res.x[1]), color = 'red',linestyle='-.')
+
+
+fig.set_figwidth(7.16)
+fig.set_figheight(3.)
+fig.tight_layout()
+plt.savefig('fig/fits.png',dpi=600)
+plt.show()

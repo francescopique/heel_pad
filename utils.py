@@ -10,44 +10,6 @@ def get_fn_miller(X,x,xdot):
 
     return fN
 
-def get_fn_falisse_smooth_3parms(X,x,xdot):
-    """
-    function to get the hunt crossley normal force, for impact experiments
-    
-    X = [E,c] parameters to be optimized
-    x = indentation or deformation over time
-    xdot = deformation velocity over time (must be known)
-
-    fN = (a*x**2)*(1+b*xdot)
-    """
-    E = X[0]
-    c = X[1]
-    p = X[2]
-    cf = 1e-5
-    R = 0.02
-    bd = 300
-    bv = 50
-    k = 1/2 * E**(2./3.)
-    k = 1/2 * E**(2./3.)
-    #fHz = (4/3)*k*sqrt(R*k)*x**(3)
-    fHz = np.zeros(len(x))
-    for i in range(len(x)):
-        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(p))
-    fHz_smooth = np.zeros(len(fHz))
-    for i in range(len(x)):
-        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i])))
-
-
-    fHc = fHz_smooth*(1 +1.5*c*xdot)
-
-    fHc_smooth = np.zeros(len(fHc))
-    for i in range(len(xdot)):
-        fHc_smooth[i] = fHc[i]*(0.5 + 0.5*tanh(bv*(xdot[i]+ (2./(3.*c)))))
-
-    fN = fHc_smooth
-
-    return fN
-
 
 def get_fn_ackermann(X,x,xdot):
     a = X[0]
@@ -69,7 +31,79 @@ def get_fn_falisse_smooth(X,x,xdot):
 
     E = X[0]
     c = X[1]
-    R = 0.02
+    R = 0.03
+    bd = 300
+    bv = 50
+    cf = 1e-5
+    k = 1/2 * E**(2./3.)
+    #fHz = (4/3)*k*sqrt(R*k)*x**(3)
+    fHz = np.zeros(len(x))
+    for i in range(len(x)):
+        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(3/2))
+    fHz_smooth = np.zeros(len(fHz))
+    for i in range(len(x)):
+        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i])))
+
+    fHc = fHz_smooth*(1 +1.5*c*xdot)
+
+    fHc_smooth = np.zeros(len(fHc))
+    for i in range(len(xdot)):
+        fHc_smooth[i] = fHc[i]*(0.5 + 0.5*tanh(bv*(xdot[i]+ (2./(3.*c)))))
+
+    fN = fHc_smooth
+
+    return fN
+
+
+def get_fn_custom_smooth(X,x,xdot):
+    """
+    function to get the hunt crossley normal force, for impact experiments
+    
+    X = [E,c] parameters to be optimized
+    x = indentation or deformation over time
+    xdot = deformation velocity over time (must be known)
+
+    """
+
+    E = X[0]
+    c = X[1]
+    R = 0.03
+    bd = 300
+    bv = 50
+    cf = 1e-5
+    k = 1/2 * E**(2./3.)
+    #fHz = (4/3)*k*sqrt(R*k)*x**(3)
+    fHz = np.zeros(len(x))
+    for i in range(len(x)):
+        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(3))
+    fHz_smooth = np.zeros(len(fHz))
+    for i in range(len(x)):
+        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i])))
+
+    fHc = fHz_smooth*(1 +1.5*c*xdot)
+
+    fHc_smooth = np.zeros(len(fHc))
+    for i in range(len(xdot)):
+        fHc_smooth[i] = fHc[i]*(0.5 + 0.5*tanh(bv*(xdot[i]+ (2./(3.*c)))))
+
+    fN = fHc_smooth
+
+    return fN
+
+
+def get_fn_custom_newsmooth(X,x,xdot):
+    """
+    function to get the hunt crossley normal force, for impact experiments
+    
+    X = [E,c] parameters to be optimized
+    x = indentation or deformation over time
+    xdot = deformation velocity over time (must be known)
+
+    """
+
+    E = X[0]
+    c = X[1]
+    R = 0.03
     bd = 300
     bv = 50
     cf = 1e-5
@@ -92,58 +126,9 @@ def get_fn_falisse_smooth(X,x,xdot):
 
     return fN
     
-def get_fn_falisse(X,x,xdot):
-    """
-    function to get the hunt crossley normal force, for impact experiments
-    
-    X = [E,c] parameters to be optimized
-    x = indentation or deformation over time
-    xdot = deformation velocity over time (must be known)
-
-    """
-
-    E = X[0]
-    c = X[1]
-    R = 0.032
-    k = 1/2 * E**(2./3.)
-    fHz = (4/3)*k*sqrt(R*k)*x**(3)
-    fHc = fHz*1.5*c*xdot
-
-    fdiss = np.zeros(len(fHc))
-    for i in range(len(fHc)):
-        fdiss[i] = max(fHc[i],-fHz[i])
-
-    fN = fHz + fdiss
-
-    return fN
 
 
 
-def get_fn_standard(X,x,xdot):
-    """
-    function to get the hunt crossley normal force, for impact experiments
-    
-    X = [E,c] parameters to be optimized
-    x = indentation or deformation over time
-    xdot = deformation velocity over time (must be known)
-
-    """
-
-    E = X[0]
-    c = X[1]
-    p = X[2]
-    R = 0.032
-
-    fHz = (4/3)*sqrt(R)*E*x**(3)
-    fHc = 1.5*fHz*c*xdot
-
-    fdiss = np.zeros(len(fHc))
-    for i in range(len(fHc)):
-        fdiss[i] = max(fHc[i],-fHz[i])
-
-    fN = fHz + fdiss
-
-    return fN
 
 def get_fn_indent_half(X,x,x_peak,f):
     """
@@ -215,6 +200,49 @@ def get_fn_indent_full(X,x_load,x_unload,x_peak,f):
     fN_unload = fHz + fHc
 
     fN = np.append(fN_load,fN_unload)
+
+    return fN
+
+
+# 3 parms: to estimate p
+# 6 parms: to estimate p, bd, bv, cf (FAIL)
+
+
+def get_fn_falisse_smooth_3parms(X,x,xdot):
+    """
+    function to get the hunt crossley normal force, for impact experiments
+    
+    X = [E,c] parameters to be optimized
+    x = indentation or deformation over time
+    xdot = deformation velocity over time (must be known)
+
+    fN = (a*x**2)*(1+b*xdot)
+    """
+    E = X[0]
+    c = X[1]
+    p = X[2]
+    cf = 1e-5
+    R = 0.02
+    bd = 300
+    bv = 50
+    k = 1/2 * E**(2./3.)
+    k = 1/2 * E**(2./3.)
+    #fHz = (4/3)*k*sqrt(R*k)*x**(3)
+    fHz = np.zeros(len(x))
+    for i in range(len(x)):
+        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(p))
+    fHz_smooth = np.zeros(len(fHz))
+    for i in range(len(x)):
+        fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i])))
+
+
+    fHc = fHz_smooth*(1 +1.5*c*xdot)
+
+    fHc_smooth = np.zeros(len(fHc))
+    for i in range(len(xdot)):
+        fHc_smooth[i] = fHc[i]*(0.5 + 0.5*tanh(bv*(xdot[i]+ (2./(3.*c)))))
+
+    fN = fHc_smooth
 
     return fN
 
