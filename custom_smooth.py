@@ -184,8 +184,16 @@ color = 'tab:blue'
 ax4.set_ylabel('Force [N]', color=color)  
 ax4.plot(t, fsav,label='s1',color=color,linewidth=1)
 #ax2.plot(t,fhz_sav[0],label='s1',color='green',linewidth=1)
-#ax2.plot(t, fsav[0]-fhz_sav[0])
+#ax4.plot(t, fsav-fhz_sav,label='hc',color='green',linewidth=1)    
 ax4.tick_params(axis='y', labelcolor=color)
+
+# load resulting GRF
+# path ='../bilevel_ocp/Results/20240320134823/GRF.mot'
+# [header, labels, data] = readMotionFile(path)
+# data = np.array(data)
+# GRF = data[:,2]
+# time = data[:,0]
+# ax4.plot(t,GRF,label='GRF',color='k',linewidth=1)
 
 fig.set_figwidth(7.16)
 fig.set_figheight(3.)

@@ -58,7 +58,7 @@ f = plt.figure()
 # switch to mm
 xplot = x*1000
 # In vivo (Aerts 1993), vi = 0.96 m/s
-plt.plot(data[:,0]*1000, data[:,1],label='Aertz 1993\n (experimental)',color='black')
+plt.plot(data[:,0]*1000, data[:,1],label='Aerts 1993\n (experimental)',color='black')
 plt.plot(xplot,fN_kino,label ='Kinoshita 1993\n (experimental)',color='red')
 
 

@@ -43,6 +43,38 @@ xdot = integrate.cumulative_trapezoid(-xddot, t,initial=0) + xdot_init
 mass = 5 
 fN_truth = mass*xddot
 
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+fsize = 8
+
+ax1.plot(t,x,'k',label='x')
+ax1.set_ylabel('Deformation\n [m]',fontsize=fsize)
+ax1.tick_params(axis='both', labelsize=8)
+ax2.plot(t,xddot,'k')
+ax2.set_ylabel('Deceleration\n [m/$\mathdefault{s^2}$]',fontsize=fsize)
+ax2.tick_params(axis='both', labelsize=8)
+ax3.plot(t,xdot,'k',label='$\mathrm{\dot{x}}$')
+ax3.set_ylabel('Velocity\n [m/s]',fontsize=fsize)
+ax3.set_xlabel('Time [s]',fontsize=fsize)
+ax3.tick_params(axis='both', labelsize=8)
+
+# legend
+#fig.legend(loc='outside lower center',ncol=3)
+
+#grid on
+ax1.grid()
+ax2.grid()
+ax3.grid()
+
+
+fig.set_figwidth(3.5)
+fig.set_figheight(3.)
+fig.tight_layout()
+
+plt.show()
+
+# save images
+fig.savefig('fig/data.png', format='png',dpi=600)
+
 fig, (ax1, ax2,ax3) = plt.subplots(1,3)
 #SUBPLOT 1
 # get default model results
