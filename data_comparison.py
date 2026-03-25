@@ -15,8 +15,8 @@ plt.rcParams['font.serif'] = 'times new roman'
 # plt.rcParams['font.size'] = 14
 
 
-x_data = np.genfromtxt('displacement.csv',delimiter='\t')   # ms , mm
-decel_data = np.genfromtxt('deceleration.csv',delimiter='\t') # ms , G
+x_data = np.genfromtxt('data/displacement.csv',delimiter='\t')   # ms , mm
+decel_data = np.genfromtxt('data/deceleration.csv',delimiter='\t') # ms , G
 # convert to SI units
 x_data[:,0] = x_data[:,0] / 1000 # s
 x_data[:,1] = x_data[:,1] / 1000 # m
@@ -43,9 +43,9 @@ fN_kino = mass*xddot
 # Aertz in vivo
 # data by hand from aertz
 # load np array from csv
-data_path = 'barefoot_load.csv'
+data_path = 'data/barefoot_load.csv'
 data_load = np.genfromtxt(data_path,delimiter='\t')
-data_path = 'barefoot_unload.csv'
+data_path = 'data/barefoot_unload.csv'
 data_unload = np.genfromtxt(data_path,delimiter='\t')
 # convert to SI
 data_load[:,0] = data_load[:,0]/1000 # mm to m
@@ -55,8 +55,8 @@ data = np.append(data_load,data_unload,axis=0)
 f = plt.figure()
 
 # wong color palette
-color = ['#000000', '#E69F00','#56B4E9','#009E73','#F0E442','#0072B2', '#D55E00', '#CC79A7']
-
+# color = ['#000000', '#E69F00','#56B4E9','#009E73','#F0E442','#0072B2', '#D55E00', '#CC79A7']
+color = ['k','red','green','purple','blue']
 #plot
 # switch to mm
 xplot = x*1000
@@ -96,5 +96,5 @@ plt.grid()
 f.set_figwidth(3.5)
 f.set_figheight(3.)
 f.tight_layout()
-plt.savefig('data_comparison.png',dpi=600)
+plt.savefig('fig/data_comparison.png',dpi=600)
 plt.show()

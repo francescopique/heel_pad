@@ -13,12 +13,16 @@ from scipy import integrate
 # deceleration.csv: time [ms], deceleration [G]. 
 # Signal from accelerometer plced on pendulum impacting the heelpad
 
-x_data = np.genfromtxt('displacement.csv', delimiter='\t')  # ms , mm
-decel_data = np.genfromtxt('deceleration.csv', delimiter='\t')  # ms , G
+x_data = np.genfromtxt('data/displacement.csv', delimiter='\t')  # ms , mm
+decel_data = np.genfromtxt('data/deceleration.csv', delimiter='\t')  # ms , G
 
 plt.rcParams['text.usetex'] = True
+# plt.rcParams['font.family'] = 'sans-serif'
+# plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
+
+
 plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = 'times new roman'
+plt.rcParams['font.sans-serif'] = 'Times'
 #plt.rcParams['font.size'] = 14
 
 # Converting to SI units
@@ -29,13 +33,12 @@ decel_data[:, 1] = decel_data[:, 1] * 9.81  # m/s^2
 
 # Interpolate data to get evenly spaced samples
 # We impose a 40 ms time window
-N = 100
-t = np.linspace(0, 0.04, 400)
+N = 400
+t = np.linspace(0, 0.04, N)
 x = np.interp(t, x_data[:, 0], x_data[:, 1])
 xddot = np.interp(t, decel_data[:,0], decel_data[:, 1])
 
 # For these data the initial impact veloicty is given in the paper as 0.93 m/s
-# To do : check velocity of impact range for walking.
 # Integrate xddot to get velocity
 # xddot is deceleration, thus the minus sign in the integration
 xdot_init = 0.93
@@ -61,8 +64,8 @@ ax3.set_xlabel('Time [s]',fontsize=fsize)
 ax3.tick_params(axis='both', labelsize=8)
 
 # Experimental data
-ax1.plot(x_data[:, 0], x_data[:, 1], 'ro', label='Experimental')
-ax2.plot(decel_data[:, 0], decel_data[:, 1], 'ro', label='Experimental')
+# ax1.plot(x_data[:, 0], x_data[:, 1], 'ro', label='Experimental')
+# ax2.plot(decel_data[:, 0], decel_data[:, 1], 'ro', label='Experimental')
 
 #grid on
 ax1.grid()
@@ -71,10 +74,19 @@ ax3.grid()
 fig.set_figwidth(3.5)
 fig.set_figheight(3.)
 fig.tight_layout()
+# fig.set_facecolor('#DDEAF7')
+
 # plt.show()
 fig.savefig('fig/data.png', format='png', dpi=600)
-plt.rcParams['font.size'] = 9
 
+
+
+
+
+
+
+
+plt.rcParams['font.size'] = 9
 fig, (ax1, ax2) = plt.subplots(2,1)
 # Subplot 1
 # Get default model results
@@ -158,5 +170,7 @@ ax2.legend(loc='upper left')
 fig.set_figwidth(3.58)
 fig.set_figheight(6.)
 fig.tight_layout()
-plt.savefig('fig/fits2.png',dpi=600)
+# fig.set_facecolor('#DDEAF7')
+
+plt.savefig('fig/fits.png',dpi=600)
 plt.show()
