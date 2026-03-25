@@ -31,7 +31,7 @@ def get_fn_falisse_smooth(X,x,xdot):
 
     E = X[0]
     c = X[1]
-    R = 0.03
+    R = 0.02
     bd = 300
     bv = 50
     cf = 1e-5
@@ -67,15 +67,16 @@ def get_fn_custom_smooth(X,x,xdot):
 
     E = X[0]
     c = X[1]
-    R = 0.03
+    R = 0.032
     bd = 300
     bv = 50
     cf = 1e-5
-    k = 1/2 * E**(2./3.)
-    #fHz = (4/3)*k*sqrt(R*k)*x**(3)
+
+
     fHz = np.zeros(len(x))
     for i in range(len(x)):
-        fHz[i] = (4/3)*k*sqrt(R*k)*(sqrt(x[i]*x[i] +cf)**(3))
+        fHz[i] = (4/3)*E*sqrt(R)*(sqrt(x[i]*x[i] +cf)**(3))
+
     fHz_smooth = np.zeros(len(fHz))
     for i in range(len(x)):
         fHz_smooth[i] = fHz[i]*(0.5 +0.5*tanh(bd*(x[i])))
@@ -103,7 +104,7 @@ def get_fn_custom_newsmooth(X,x,xdot):
 
     E = X[0]
     c = X[1]
-    R = 0.03
+    R = 0.02
     bd = 300
     bv = 50
     cf = 1e-5

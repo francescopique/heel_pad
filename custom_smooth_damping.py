@@ -192,6 +192,6 @@ fig.set_figheight(3.)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 # put zero at same
 # save
-plt.savefig('custom_smooth_force.png',dpi=600)
+# plt.savefig('custom_smooth_force.png',dpi=600)
 plt.show()
 
