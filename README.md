@@ -4,6 +4,10 @@
 - Performs a least squares fit for the parameters $(E, c)$  minimizing the error between experimental restoring force, and force computed according to the HC model.
 - The same is done with the proposed novel contact model
 
+# exponent.py
+
+- Identical as main, but optimizes also the exponent p
+
 # data_comparison.py
 
 - Computes the force-deformation loops according to several models il the literature and compares it to experimental datasets. bone present [2].
