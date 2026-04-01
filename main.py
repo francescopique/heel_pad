@@ -59,7 +59,7 @@ ax2.plot(t,xddot,'k')
 ax2.set_ylabel('Deceleration\n [m/$\mathdefault{s^2}$]',fontsize=fsize)
 ax2.tick_params(axis='both', labelsize=8)
 ax3.plot(t,xdot,'k',label='$\mathrm{\dot{x}}$')
-ax3.set_ylabel('Velocity\n [m/s]',fontsize=fsize)
+ax3.set_ylabel('Deformation rate\n [m/s]',fontsize=fsize)
 ax3.set_xlabel('Time [s]',fontsize=fsize)
 ax3.tick_params(axis='both', labelsize=8)
 
