@@ -83,7 +83,7 @@ fN = utils.get_fn_falisse_smooth_3parms([res.x[0], res.x[1], res.x[2]], x, xdot)
 Edec = Decimal(int(res.x[0]))
 Esci =  '{:.2E}'.format(Edec) 
 ax2.plot(x, fN, '-.',
-        label = 'Best fit K = %.2f $\mathrm{GPa m^{2/3}}$, c = %.2f s/m, p = %.2f' % (res.x[0]/(1e9),res.x[1], res.x[2]),
+        label = 'Best fit K = %.2f $\mathrm{GPa m^{-3/2}}$, c = %.2f s/m, p = %.2f' % (res.x[0]/(1e9),res.x[1], res.x[2]),
         # label = 'Best fit E =' + Esci + ' Pa, c = %.2f s/m' % res.x[1],
 
         color = 'red', linestyle='-.')

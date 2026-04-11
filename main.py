@@ -77,7 +77,7 @@ fig.tight_layout()
 # fig.set_facecolor('#DDEAF7')
 
 # plt.show()
-fig.savefig('fig/data.png', format='png', dpi=600)
+# fig.savefig('fig/data.png', format='png', dpi=600)
 
 
 
@@ -149,7 +149,7 @@ def residuals(X, x, xdot, fN_truth):
 x0 = np.array([1e5, 5])
 #Bounds
 E_lower = 1e1
-E_upper = 1e11
+E_upper = 1e11  
 c_lower = 0
 c_upper = 1e2
 bounds=([E_lower, c_lower], [E_upper, c_upper])
@@ -161,7 +161,7 @@ fN = utils.get_fn_custom_smooth([res.x[0], res.x[1]], x, xdot)
 Edec = Decimal(int(res.x[0]))
 Esci =  '{:.2E}'.format(Edec) 
 ax2.plot(x, fN, '-.',
-        label = 'Best fit K = %.2f $\mathrm{GPa m^{2/3}}$, c = %.2f s/m' % (res.x[0]/(1e9),res.x[1]),
+        label = 'Best fit K = %.2f $\mathrm{GPa m^{-3/2}}$, c = %.2f s/m' % (res.x[0]/(1e9),res.x[1]),
         # label = 'Best fit E =' + Esci + ' Pa, c = %.2f s/m' % res.x[1],
 
         color = 'red', linestyle='-.')
@@ -172,5 +172,5 @@ fig.set_figheight(6.)
 fig.tight_layout()
 # fig.set_facecolor('#DDEAF7')
 
-plt.savefig('fig/fits.png',dpi=600)
+# plt.savefig('fig/fits.png',dpi=600)
 plt.show()
