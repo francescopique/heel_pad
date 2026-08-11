@@ -61,8 +61,8 @@ color = ['k','red','green','purple','blue']
 # switch to mm
 xplot = x*1000
 # In vivo (Aerts 1993), vi = 0.96 m/s
-plt.plot(data[:,0]*1000, data[:,1],label='Aerts 1993\n (experimental)',color=color[0])
-plt.plot(xplot,fN_kino,label ='Kinoshita 1993\n (experimental)',color=color[1])
+plt.plot(data[:,0]*1000, data[:,1],label='Aerts (1993),\nexperimental',color=color[0])
+plt.plot(xplot,fN_kino,label ='Kinoshita (1993),\nexperimental',color=color[1])
 
 
 
@@ -70,21 +70,21 @@ plt.plot(xplot,fN_kino,label ='Kinoshita 1993\n (experimental)',color=color[1])
 a = 5e7
 b = 1
 fN = utils.get_fn_ackermann([a,b],x,xdot)
-plt.plot(xplot,fN,label='Ackermann 2010',color=color[2])
+plt.plot(xplot,fN,label='Ackermann (2010)',color=color[2])
 
 
 # try miller 2015 a=6e5,b=1
 a = 6e5
 b = 1
 fN = utils.get_fn_miller([a,b],x,xdot)
-plt.plot(xplot,fN,label='Miller 2015',color=color[3])
+plt.plot(xplot,fN,label='Miller (2015)',color=color[3])
 
 
 # lin and pandy 2017 a=1e6,b=1.5
 a = 1e6
 b = 1.5
 fN = utils.get_fn_miller([a,b],x,xdot)
-plt.plot(xplot,fN,label='Lin 2017',color=color[4])
+plt.plot(xplot,fN,label='Lin (2017)',color=color[4])
 fsize = 8
 plt.legend(fontsize=fsize, framealpha=1)
 plt.yticks(fontsize=fsize)

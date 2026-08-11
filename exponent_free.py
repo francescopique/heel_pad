@@ -78,6 +78,16 @@ bounds=([E_lower, c_lower, p_lower], [E_upper, c_upper, p_upper])
 res = least_squares(residuals, x0, args=(x, xdot, fN_truth), bounds=bounds)
 print(res)
 print('E = %f, c = %f, p = %f' % (res.x[0], res.x[1], res.x[2]))
+
+# rmse
+rmse = np.mean(res.fun**2)
+rmse = np.sqrt(rmse)
+
+
+
+print('RMSE: ', rmse)
+print('RMSE %(peak force): ', rmse/ max(fN_truth))
+
 fN = utils.get_fn_falisse_smooth_3parms([res.x[0], res.x[1], res.x[2]], x, xdot)
 
 Edec = Decimal(int(res.x[0]))

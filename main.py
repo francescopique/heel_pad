@@ -95,7 +95,7 @@ c = 2
 fN = utils.get_fn_falisse_smooth([E, c], x, xdot)
 
 # Plot default vs. ground truth
-ax1.plot(x, fN_truth, label = 'Experimental', color = 'black')
+ax1.plot(x, fN_truth, label = 'Kinoshita (1993), experimental', color = 'black')
 ax1.set_ylabel('Force [N]')
 ax1.set_xlabel('Deformation [m]')
 ax1.set_title('a)')
@@ -115,6 +115,16 @@ bounds=([E_lower, c_lower], [E_upper, c_upper])
 res = least_squares(residuals, x0, args=(x, xdot, fN_truth), bounds=bounds)
 print(res)
 print('E = %f, c = %f' % (res.x[0], res.x[1]))
+
+# rmse
+rmse = np.mean(res.fun**2)
+rmse = np.sqrt(rmse)
+
+
+
+print('RMSE: ', rmse)
+print('RMSE %(peak force): ', rmse/ max(fN_truth))
+
 fN = utils.get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
 
 
@@ -134,7 +144,7 @@ ax1.grid()
 ax1.legend()
 
 #SUBPLOT 2
-ax2.plot(x, fN_truth, label = 'Experimental', color = 'black')
+ax2.plot(x, fN_truth, label = 'Kinoshita (1993), experimental', color = 'black')
 ax2.set_xlabel('Deformation [m]')
 ax2.set_ylabel('Force [N]')
 ax2.grid()
@@ -155,6 +165,16 @@ c_upper = 1e2
 bounds=([E_lower, c_lower], [E_upper, c_upper])
 res = least_squares(residuals, x0, args=(x, xdot, fN_truth), bounds=bounds)
 print(res)
+
+# rmse
+rmse = np.mean(res.fun**2)
+rmse = np.sqrt(rmse)
+
+
+
+print('RMSE: ', rmse)
+print('RMSE %(peak force): ', rmse/ max(fN_truth))
+
 print('E = %f, c = %f' % (res.x[0], res.x[1]))
 fN = utils.get_fn_custom_smooth([res.x[0], res.x[1]], x, xdot)
 
@@ -172,5 +192,5 @@ fig.set_figheight(6.)
 fig.tight_layout()
 # fig.set_facecolor('#DDEAF7')
 
-# plt.savefig('fig/fits.png',dpi=600)
+plt.savefig('fig/fits.png',dpi=600)
 plt.show()
