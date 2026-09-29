@@ -52,17 +52,22 @@ fN_truth = mass*xddot
 fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
 fsize = 8
 
-ax1.plot(t,x,'k',label='x')
-ax1.set_ylabel('Deformation\n [m]',fontsize=fsize)
+ax1.plot(t,x*1000,'k',label='x')
+ax1.set_ylabel('Deformation\n [mm]',fontsize=fsize)
 ax1.tick_params(axis='both', labelsize=8)
-ax2.plot(t,xddot,'k')
-ax2.set_ylabel('Deceleration\n [m/$\mathdefault{s^2}$]',fontsize=fsize)
-ax2.tick_params(axis='both', labelsize=8)
-ax3.plot(t,xdot,'k',label='$\mathrm{\dot{x}}$')
-ax3.set_ylabel('Deformation rate\n [m/s]',fontsize=fsize)
-ax3.set_xlabel('Time [s]',fontsize=fsize)
+ax3.plot(t,xddot*1000,'k')
+ax3.set_ylabel('Deceleration\n [mm/$\mathdefault{\mathrm{s}^2}$]',fontsize=fsize)
 ax3.tick_params(axis='both', labelsize=8)
 
+ax2.plot(t,xdot*1000,'k',label='$\mathrm{\dot{x}}$')
+ax2.set_ylabel('Deformation rate\n [mm/s]',fontsize=fsize)
+ax3.set_xlabel('Time [s]',fontsize=fsize)
+ax2.tick_params(axis='both', labelsize=8)
+
+from matplotlib.ticker import ScalarFormatter
+
+for ax in (ax1, ax2, ax3):
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 # Experimental data
 # ax1.plot(x_data[:, 0], x_data[:, 1], 'ro', label='Experimental')
 # ax2.plot(decel_data[:, 0], decel_data[:, 1], 'ro', label='Experimental')
@@ -77,7 +82,7 @@ fig.tight_layout()
 # fig.set_facecolor('#DDEAF7')
 
 # plt.show()
-# fig.savefig('fig/data.png', format='png', dpi=600)
+fig.savefig('fig/data.png', format='png', dpi=600)
 
 
 
@@ -90,14 +95,14 @@ plt.rcParams['font.size'] = 9
 fig, (ax1, ax2) = plt.subplots(2,1)
 # Subplot 1
 # Get default model results
-E = 5e6
-c = 2
-fN = utils.get_fn_falisse_smooth([E, c], x, xdot)
+# E = 5e6
+# c = 2
+# fN = utils.get_fn_falisse_smooth([E, c], x, xdot)
 
 # Plot default vs. ground truth
-ax1.plot(x, fN_truth, label = 'Kinoshita (1993), experimental', color = 'black')
+ax1.plot(x*1000, fN_truth, label = 'Kinoshita (1993), experimental', color = 'black')
 ax1.set_ylabel('Force [N]')
-ax1.set_xlabel('Deformation [m]')
+ax1.set_xlabel('Deformation [mm]')
 ax1.set_title('a)')
 # Function to optimize 
 def residuals(X, x, xdot, fN_truth): 
@@ -131,21 +136,25 @@ fN = utils.get_fn_falisse_smooth([res.x[0],res.x[1]],x,xdot)
 Edec = Decimal(int(res.x[0]))
 Esci =  '{:.2E}'.format(Edec) 
 
-ax1.plot(x, fN, '-.',
+ax1.plot(x*1000, fN, '-.',
         label = 'Best fit E = %.2f MPa, c = %.2f s/m ' % (res.x[0]/1000000, res.x[1]),
         # label = 'Best fit E =' + Esci + ' Pa, c = %.2f s/m' % res.x[1],
 
         color = 'red',linestyle='-.')
+
+
 # Plot what would be the default loop
+E = 1e6
+c = 2
 fN_def = utils.get_fn_falisse_smooth([E,c],x,xdot)
-ax1.plot(x, fN_def, label = 'Default E = 1 MPa, c = 2 s/m',
+ax1.plot(x*1000, fN_def, label = 'Default E %d MPa, c = %d s/m ' % (E/1e6, c),
         color = 'b',linestyle='--')
 ax1.grid()
 ax1.legend()
 
 #SUBPLOT 2
-ax2.plot(x, fN_truth, label = 'Kinoshita (1993), experimental', color = 'black')
-ax2.set_xlabel('Deformation [m]')
+ax2.plot(x*1000, fN_truth, label = 'Kinoshita (1993), experimental', color = 'black')
+ax2.set_xlabel('Deformation [mm]')
 ax2.set_ylabel('Force [N]')
 ax2.grid()
 ax2.set_title('b)')
@@ -180,8 +189,8 @@ fN = utils.get_fn_custom_smooth([res.x[0], res.x[1]], x, xdot)
 
 Edec = Decimal(int(res.x[0]))
 Esci =  '{:.2E}'.format(Edec) 
-ax2.plot(x, fN, '-.',
-        label = 'Best fit K = %.2f $\mathrm{GPa m^{-3/2}}$, c = %.2f s/m' % (res.x[0]/(1e9),res.x[1]),
+ax2.plot(x*1000, fN, '-.',
+        label = 'Best fit $\hat{\mathrm{K}}$ = %.2f $\mathrm{GPa m^{-3/2}}$, $\hat{\mathrm{c}}$ = %.2f s/m' % (res.x[0]/(1e9),res.x[1]),
         # label = 'Best fit E =' + Esci + ' Pa, c = %.2f s/m' % res.x[1],
 
         color = 'red', linestyle='-.')
